@@ -127,5 +127,8 @@ private fun String.sha256(): String {
             update(data)
             digest()
         }
-        .decodeToString()
+        .asHexString()
 }
+
+private fun ByteArray.asHexString() =
+    joinToString("") { it.toUByte().toString(16).padStart(2, '0') }
