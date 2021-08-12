@@ -5,12 +5,15 @@ to [micrometer](https://micrometer.io). Using
 [graphql-java](https://www.graphql-java.com) instrumentation we can precisely
 measure how queries and data fetchers are executed.
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.symbaloo/graphql-micrometer/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.symbaloo/graphql-micrometer)
+![Actions](https://github.com/symbaloo/graphql-micrometer/workflows/Run%20Build/badge.svg)
+
 ### Installation
 
 Add this dependency to `build.gradle` or `build.gradle.kts`.
 
 ```kotlin
-implementation("com.symbaloo:graphql-micrometer:1.0.0")
+implementation("com.symbaloo:graphql-micrometer:1.0.1")
 ```
 
 And then specify it when you build the `Graphql` object:
