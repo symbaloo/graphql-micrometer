@@ -29,14 +29,30 @@ private const val TIMER_DESCRIPTION = "Timer that records the time to fetch the 
 private val queryNameRegex = Regex("(query|mutation)\\s+(\\w+)")
 
 /**
- * See also:
+ *
+ * With **graphql-micrometer** you can create export metrics from your GraphQL schema
+ * to [micrometer](https://micrometer.io).
+ *
+ * Using [graphql-java](https://www.graphql-java.com) instrumentation we can precisely
+ * measure how queries and data fetchers are executed.
+ *
+ * There are two types of metrics: one for query execution, and another for
+ * resolver timing. The timers are registered to micrometer using these names by
+ * default:
+ *
+ * - `graphql.timer.query`
+ * - `graphql.timer.resolver`
+ *
+ * ### See also:
  *
  * - https://github.com/graphql-java-kickstart/graphql-spring-boot/blob/master/graphql-spring-boot-autoconfigure/src/main/java/graphql/kickstart/autoconfigure/web/servlet/metrics/MetricsInstrumentation.java
  * - https://github.com/apollographql/apollo-tracing
  * - [TracingInstrumentation]
  */
-class MicrometerInstrumentation(
+class MicrometerInstrumentation @JvmOverloads constructor(
     private val meterRegistry: MeterRegistry,
+    private val queryTimeMetricName: String = QUERY_TIME_METRIC_NAME,
+    private val resolverTimeMetricName: String = RESOLVER_TIME_METRIC_NAME,
 ) : SimpleInstrumentation() {
 
     override fun createState(parameters: InstrumentationCreateStateParameters): InstrumentationState =
@@ -89,7 +105,7 @@ class MicrometerInstrumentation(
     }
 
     private fun buildQueryTimer(operationName: String, hash: String, operation: String): Timer =
-        Timer.builder(QUERY_TIME_METRIC_NAME)
+        Timer.builder(queryTimeMetricName)
             .description(TIMER_DESCRIPTION)
             .tag(OPERATION_NAME_TAG, operationName)
             .tag(QUERY_HASH_TAG, hash)
@@ -97,17 +113,16 @@ class MicrometerInstrumentation(
             .register(meterRegistry)
 
     private fun buildFieldTimer(operationName: String, hash: String, parent: String, field: String): Timer =
-        Timer.builder(RESOLVER_TIME_METRIC_NAME)
+        Timer.builder(resolverTimeMetricName)
             .description(TIMER_DESCRIPTION)
             .tag(OPERATION_NAME_TAG, operationName)
             .tag(QUERY_HASH_TAG, hash)
             .tag(PARENT, parent)
             .tag(FIELD, field)
-            .tag(OPERATION, "resolvers")
             .register(meterRegistry)
 }
 
-class TraceState(
+private class TraceState(
     private val query: String,
     operationName: String?,
 ) : InstrumentationState {
