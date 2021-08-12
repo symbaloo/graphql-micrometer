@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "com.symbaloo"
-version = "1.0.1-SNAPSHOT"
+version = "1.0.1"
 description = "graphql-java instrumentation for micrometer metrics"
 
 val isReleaseVersion = !version.toString().endsWith("SNAPSHOT")
